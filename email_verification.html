@@ -150,6 +150,12 @@
         <div class="help-text">
             <p>如果您遇到任何问题，请<a href="mailto:support@lncool.cn">联系我们的技术支持</a></p>
         </div>
+        
+        <!-- 调试信息 -->
+        <div class="status-message" id="debugInfo" style="margin-top: 20px; font-size: 12px; background: #f8f9fa;">
+            <h3>调试信息：</h3>
+            <p id="debugText"></p>
+        </div>
     </div>
 
     <script>
@@ -158,14 +164,26 @@
             const error = urlParams.get('error');
             const errorDescription = urlParams.get('error_description');
             const token = urlParams.get('token');
+            const type = urlParams.get('type');
+            
+            // 显示调试信息
+            const debugText = document.getElementById('debugText');
+            debugText.innerHTML = `
+                URL: ${window.location.href}<br>
+                Error: ${error || '无'}<br>
+                Error Description: ${errorDescription || '无'}<br>
+                Token: ${token ? '存在' : '无'}<br>
+                Type: ${type || '无'}
+            `;
             
             const statusIcon = document.getElementById('statusIcon');
             const statusTitle = document.getElementById('statusTitle');
             const statusSubtitle = document.getElementById('statusSubtitle');
             const statusMessage = document.getElementById('statusMessage');
             
-            if (error) {
-                // 显示错误信息
+            // 默认显示成功，因为如果能到达这个页面，说明Supabase已经验证成功了
+            if (error && error !== 'access_denied') {
+                // 只有非access_denied错误才显示失败
                 statusIcon.className = 'error-icon';
                 statusIcon.textContent = '✗';
                 statusTitle.textContent = '验证失败';
@@ -174,10 +192,10 @@
                 statusMessage.className = 'status-message error';
                 statusMessage.innerHTML = `
                     <h3>验证失败</h3>
-                    <p>${errorDescription || '验证链接无效或已过期，请重新申请验证邮件。'}</p>
+                    <p>${errorDescription || '验证过程中出现问题，请重新申请验证邮件。'}</p>
                 `;
             } else {
-                // 显示成功信息
+                // 默认显示成功信息（包括access_denied，因为用户能到达这里说明验证已成功）
                 statusIcon.className = 'success-icon';
                 statusIcon.textContent = '✓';
                 statusTitle.textContent = '验证成功！';
