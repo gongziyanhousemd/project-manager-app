@@ -105,35 +105,26 @@
         `;
         debugInfo.style.display = 'block';
         
-        // 根据Supabase的实际工作流程重定向
+        // 根据type参数智能跳转
         setTimeout(() => {
-            // Supabase重定向时通常不传递type参数，需要根据其他信息判断
+            const currentParams = new URLSearchParams(window.location.search);
+            
             if (type === 'recovery') {
-                // 明确是忘记密码
-                console.log('忘记密码，跳转到忘记密码页面');
-                window.location.href = 'forgot_password.html?token=' + (token || '');
-            } else if (type === 'signup') {
-                // 明确是邮箱确认
-                console.log('邮箱确认，跳转到邮箱验证页面');
-                window.location.href = 'email_verification.html?token=' + (token || '');
-            } else if (type === 'magiclink') {
-                // 魔法链接登录
-                console.log('魔法链接登录，跳转到主页');
-                window.location.href = 'index.html?login=success';
-            } else if (error === 'access_denied') {
-                // 有access_denied错误，通常是忘记密码（因为邮箱确认成功不会有这个错误）
-                console.log('检测到access_denied错误，跳转到忘记密码页面');
-                // 保留所有原始参数
-                const currentParams = new URLSearchParams(window.location.search);
+                // 忘记密码，跳转到密码重置页面
+                console.log('跳转到密码重置页面');
                 window.location.href = 'forgot_password.html?' + currentParams.toString();
-            } else if (error) {
-                // 其他错误，跳转到邮箱验证页面显示错误
-                console.log('其他错误，跳转到邮箱验证页面');
-                window.location.href = 'email_verification.html?error=' + encodeURIComponent(error) + '&error_description=' + encodeURIComponent(errorDescription || '');
+            } else if (type === 'signup') {
+                // 邮箱验证，跳转到验证成功页面
+                console.log('跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?' + currentParams.toString();
+            } else if (error === 'access_denied') {
+                // 访问被拒绝，通常是忘记密码的情况
+                console.log('检测到访问被拒绝，跳转到密码重置页面');
+                window.location.href = 'forgot_password.html?' + currentParams.toString();
             } else {
-                // 没有错误，默认跳转到邮箱验证页面（成功情况）
-                console.log('没有错误，跳转到邮箱验证页面');
-                window.location.href = 'email_verification.html?token=' + (token || '');
+                // 默认跳转到邮箱验证页面
+                console.log('默认跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?' + currentParams.toString();
             }
         }, 2000); // 2秒后跳转，让用户看到加载动画
     </script>

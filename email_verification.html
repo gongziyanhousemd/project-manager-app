@@ -181,6 +181,14 @@
             const statusSubtitle = document.getElementById('statusSubtitle');
             const statusMessage = document.getElementById('statusMessage');
             
+            // 检查是否是忘记密码的情况
+            if (error === 'access_denied' && errorDescription && errorDescription.includes('expired')) {
+                // 忘记密码的情况，跳转到忘记密码页面
+                console.log('检测到忘记密码，跳转到忘记密码页面');
+                window.location.href = 'forgot_password.html?token=' + (token || '');
+                return;
+            }
+            
             // 默认显示成功，因为如果能到达这个页面，说明Supabase已经验证成功了
             if (error && error !== 'access_denied') {
                 // 只有非access_denied错误才显示失败
