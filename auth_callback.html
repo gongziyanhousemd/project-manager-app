@@ -123,7 +123,9 @@
             } else if (error === 'access_denied') {
                 // 有access_denied错误，通常是忘记密码（因为邮箱确认成功不会有这个错误）
                 console.log('检测到access_denied错误，跳转到忘记密码页面');
-                window.location.href = 'forgot_password.html?token=' + (token || '');
+                // 保留所有原始参数
+                const currentParams = new URLSearchParams(window.location.search);
+                window.location.href = 'forgot_password.html?' + currentParams.toString();
             } else if (error) {
                 // 其他错误，跳转到邮箱验证页面显示错误
                 console.log('其他错误，跳转到邮箱验证页面');
