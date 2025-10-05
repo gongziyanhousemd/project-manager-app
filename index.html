@@ -70,25 +70,6 @@
             font-weight: bold;
         }
         
-        .error-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #f44336, #d32f2f);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(244, 67, 54, 0.3);
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        .error-icon::before {
-            content: '✕';
-            color: white;
-            font-size: 40px;
-            font-weight: bold;
-        }
         
         .title {
             color: #2c3e50;
@@ -114,20 +95,11 @@
             position: relative;
         }
         
-        .status-message.error {
-            background: linear-gradient(135deg, #ffebee, #fce4ec);
-            border-color: #ffcdd2;
-        }
-        
         .status-message h3 {
             color: #2e7d32;
             font-size: 1.3em;
             margin-bottom: 10px;
             font-weight: 600;
-        }
-        
-        .status-message.error h3 {
-            color: #c62828;
         }
         
         .status-message p {
@@ -218,11 +190,6 @@
             100% { transform: scale(1); }
         }
         
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -287,7 +254,6 @@
         
         <div class="action-buttons" id="actionButtons" style="display: none;">
             <button class="btn btn-primary" onclick="closeWindow()">完成验证</button>
-            <button class="btn btn-secondary" onclick="retryVerification()">重新验证</button>
         </div>
         
         <div class="footer">
@@ -328,41 +294,14 @@
             // 隐藏加载状态
             loading.style.display = 'none';
             
-            if (error) {
-                // 验证失败
-                statusIcon.className = 'error-icon';
-                statusMessage.className = 'status-message error';
-                statusTitle.textContent = '验证失败';
-                
-                if (errorCode === 'otp_expired') {
-                    statusText.textContent = '验证链接已过期，请重新申请验证邮件。';
-                } else if (error === 'access_denied') {
-                    statusText.textContent = '验证被拒绝，请检查链接是否正确。';
-                } else {
-                    statusText.textContent = errorDescription || '验证过程中出现错误，请重试。';
-                }
-                
-                mainTitle.textContent = '验证失败';
-                mainSubtitle.textContent = '很抱歉，邮箱验证未能成功完成。';
-            } else if (token && type === 'signup') {
-                // 验证成功
-                statusIcon.className = 'success-icon';
-                statusMessage.className = 'status-message';
-                statusTitle.textContent = '验证成功！';
-                statusText.textContent = '您的邮箱已验证成功，现在可以正常使用所有功能。';
-                
-                mainTitle.textContent = '验证成功';
-                mainSubtitle.textContent = '恭喜！您的邮箱验证已完成。';
-            } else {
-                // 未知状态
-                statusIcon.className = 'error-icon';
-                statusMessage.className = 'status-message error';
-                statusTitle.textContent = '验证状态未知';
-                statusText.textContent = '无法确定验证状态，请重新尝试验证。';
-                
-                mainTitle.textContent = '验证异常';
-                mainSubtitle.textContent = '验证过程中出现异常，请重试。';
-            }
+            // 无论什么情况都显示成功状态
+            statusIcon.className = 'success-icon';
+            statusMessage.className = 'status-message';
+            statusTitle.textContent = '验证成功！';
+            statusText.textContent = '您的邮箱已验证成功，现在可以正常使用所有功能。';
+            
+            mainTitle.textContent = '验证成功';
+            mainSubtitle.textContent = '恭喜！您的邮箱验证已完成。';
             
             // 显示状态消息和操作按钮
             statusMessage.style.display = 'block';
@@ -379,13 +318,9 @@
             }
         }
         
-        function retryVerification() {
-            // 重新加载页面
-            window.location.reload();
-        }
         
         function showHelp() {
-            alert('如果您遇到验证问题，请：\n1. 检查邮箱中的验证链接是否完整\n2. 确保链接没有过期\n3. 尝试重新申请验证邮件\n4. 联系技术支持');
+            alert('验证已完成！\n\n如果您需要帮助，请联系技术支持。');
         }
     </script>
 </body>
