@@ -121,21 +121,26 @@
             console.log('Error:', error);
             console.log('当前参数:', currentParams.toString());
             
-            if (type === 'recovery') {
-                // 忘记密码，跳转到密码重置页面
-                console.log('✅ 检测到 type=recovery，跳转到密码重置页面');
-                window.location.href = 'forgot_password.html?' + currentParams.toString();
-            } else if (type === 'signup') {
+            // 优先检查 type 参数
+            if (type === 'signup') {
                 // 邮箱验证，跳转到验证成功页面
                 console.log('✅ 检测到 type=signup，跳转到邮箱验证页面');
                 window.location.href = 'email_verification.html?' + currentParams.toString();
+            } else if (type === 'recovery') {
+                // 忘记密码，跳转到密码重置页面
+                console.log('✅ 检测到 type=recovery，跳转到密码重置页面');
+                window.location.href = 'forgot_password.html?' + currentParams.toString();
+            } else if (error === 'access_denied' && errorDescription && errorDescription.includes('expired')) {
+                // 链接过期，根据来源判断：如果是注册流程，跳转到邮箱验证页面
+                console.log('⚠️ 检测到链接过期，根据上下文判断为注册流程，跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?' + currentParams.toString();
             } else if (error === 'access_denied') {
-                // 访问被拒绝，通常是忘记密码的情况
+                // 其他访问被拒绝的情况，跳转到密码重置页面
                 console.log('⚠️ 检测到 access_denied，跳转到密码重置页面');
                 window.location.href = 'forgot_password.html?' + currentParams.toString();
             } else {
-                // 默认跳转到邮箱验证页面
-                console.log('❓ 未检测到明确类型，默认跳转到邮箱验证页面');
+                // 默认跳转到邮箱验证页面（注册流程）
+                console.log('❓ 未检测到明确类型，默认跳转到邮箱验证页面（注册流程）');
                 window.location.href = 'email_verification.html?' + currentParams.toString();
             }
         }, 3000); // 3秒后跳转，让用户看到调试信息

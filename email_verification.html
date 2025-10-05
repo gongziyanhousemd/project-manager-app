@@ -181,11 +181,20 @@
             const statusSubtitle = document.getElementById('statusSubtitle');
             const statusMessage = document.getElementById('statusMessage');
             
-            // 检查是否是忘记密码的情况
+            // 检查是否是链接过期的情况
             if (error === 'access_denied' && errorDescription && errorDescription.includes('expired')) {
-                // 忘记密码的情况，跳转到忘记密码页面
-                console.log('检测到忘记密码，跳转到忘记密码页面');
-                window.location.href = 'forgot_password.html?token=' + (token || '');
+                // 链接过期，显示过期信息而不是跳转
+                console.log('检测到链接过期，显示过期信息');
+                statusIcon.className = 'error-icon';
+                statusIcon.textContent = '⏰';
+                statusTitle.textContent = '验证链接已过期';
+                statusSubtitle.textContent = '您的验证链接已过期，请重新申请';
+                
+                statusMessage.className = 'status-message error';
+                statusMessage.innerHTML = `
+                    <h3>验证链接已过期</h3>
+                    <p>您的邮箱验证链接已过期。请重新申请验证邮件，或联系技术支持获取帮助。</p>
+                `;
                 return;
             }
             
