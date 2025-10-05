@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>认证处理 - 项目管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 60px 50px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+            border-radius: 24px 24px 0 0;
+        }
+        
+        .icon-container {
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+            animation: pulse 2s infinite;
+        }
+        
+        .success-icon::before {
+            content: '✓';
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        .title {
+            color: #2c3e50;
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .status-message {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+            border: 1px solid #c8e6c9;
+            border-radius: 16px;
+            padding: 25px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .status-message h3 {
+            color: #2e7d32;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .status-message p {
+            color: #424242;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+        
+        .action-buttons {
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 140px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+        
+        .loading {
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #e0e0e0;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+        
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .auth-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        @media (max-width: 600px) {
+            .auth-container {
+                padding: 40px 30px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 1.8em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="icon-container">
+            <div id="statusIcon" class="success-icon"></div>
+        </div>
+        
+        <h1 class="title" id="mainTitle">认证处理</h1>
+        <p class="subtitle" id="mainSubtitle">正在处理您的认证请求...</p>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>正在处理认证请求...</p>
+        </div>
+        
+        <div class="status-message" id="statusMessage" style="display: none;">
+            <h3 id="statusTitle">处理成功！</h3>
+            <p id="statusText">您的认证请求已成功处理，请返回应用继续使用。</p>
+        </div>
+        
+        <div class="action-buttons" id="actionButtons" style="display: none;">
+            <button class="btn btn-primary" onclick="closeWindow()">完成认证</button>
+        </div>
+        
+        <div class="footer">
+            <p>项目管理系统 | <a href="#" onclick="showHelp()">需要帮助？</a></p>
+        </div>
+    </div>
+    
+    <script>
+        // 获取URL参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const errorCode = urlParams.get('error_code');
+        const errorDescription = urlParams.get('error_description');
+        const token = urlParams.get('token');
+        const type = urlParams.get('type');
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            
+            // 模拟处理过程
+            setTimeout(() => {
+                handleAuthCallback();
+            }, 2000);
+        });
+        
+        function handleAuthCallback() {
+            const loading = document.getElementById('loading');
+            const statusMessage = document.getElementById('statusMessage');
+            const actionButtons = document.getElementById('actionButtons');
+            const statusIcon = document.getElementById('statusIcon');
+            const mainTitle = document.getElementById('mainTitle');
+            const mainSubtitle = document.getElementById('mainSubtitle');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusText = document.getElementById('statusText');
+            
+            // 隐藏加载状态
+            loading.style.display = 'none';
+            
+            // 根据类型显示不同信息
+            if (type === 'signup') {
+                statusTitle.textContent = '邮箱验证成功！';
+                statusText.textContent = '您的邮箱已验证成功，现在可以正常使用所有功能。';
+                mainTitle.textContent = '验证成功';
+                mainSubtitle.textContent = '恭喜！您的邮箱验证已完成。';
+            } else if (type === 'recovery') {
+                statusTitle.textContent = '密码重置成功！';
+                statusText.textContent = '密码重置邮件已发送到您的邮箱，请查收并按照邮件中的指示完成密码重置。';
+                mainTitle.textContent = '密码重置';
+                mainSubtitle.textContent = '重置邮件已发送，请查收邮箱。';
+            } else {
+                statusTitle.textContent = '认证成功！';
+                statusText.textContent = '您的认证请求已成功处理，请返回应用继续使用。';
+                mainTitle.textContent = '认证成功';
+                mainSubtitle.textContent = '认证处理已完成。';
+            }
+            
+            // 显示状态消息和操作按钮
+            statusMessage.style.display = 'block';
+            actionButtons.style.display = 'flex';
+        }
+        
+        function closeWindow() {
+            // 尝试关闭窗口
+            if (window.opener) {
+                window.close();
+            } else {
+                // 如果无法关闭，显示提示
+                alert('认证完成！请返回应用继续使用。');
+            }
+        }
+        
+        function showHelp() {
+            alert('认证处理说明：\n\n1. 您的认证请求已成功处理\n2. 请返回应用继续使用\n3. 如有问题请联系技术支持');
+        }
+    </script>
+</body>
+</html>
