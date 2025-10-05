@@ -96,12 +96,19 @@
         const debugInfo = document.getElementById('debugInfo');
         const debugText = document.getElementById('debugText');
         debugText.innerHTML = `
-            Type: ${type || 'null'}<br>
+            <strong>URL参数分析：</strong><br>
+            Type: ${type || 'null'} ${type === 'signup' ? '✅' : type === 'recovery' ? '✅' : '❌'}<br>
             Token: ${token ? '存在' : '不存在'}<br>
             Error: ${error || '无'}<br>
             Error Description: ${errorDescription || '无'}<br>
-            Full URL: ${window.location.href}<br>
-            Search: ${window.location.search}
+            <br><strong>完整URL：</strong><br>
+            ${window.location.href}<br>
+            <br><strong>查询参数：</strong><br>
+            ${window.location.search}<br>
+            <br><strong>Hash参数：</strong><br>
+            ${window.location.hash || '无'}<br>
+            <br><strong>所有参数列表：</strong><br>
+            ${Array.from(urlParams.entries()).map(([key, value]) => `${key}: ${value}`).join('<br>')}
         `;
         debugInfo.style.display = 'block';
         
@@ -109,24 +116,29 @@
         setTimeout(() => {
             const currentParams = new URLSearchParams(window.location.search);
             
+            console.log('=== 跳转决策 ===');
+            console.log('Type:', type);
+            console.log('Error:', error);
+            console.log('当前参数:', currentParams.toString());
+            
             if (type === 'recovery') {
                 // 忘记密码，跳转到密码重置页面
-                console.log('跳转到密码重置页面');
+                console.log('✅ 检测到 type=recovery，跳转到密码重置页面');
                 window.location.href = 'forgot_password.html?' + currentParams.toString();
             } else if (type === 'signup') {
                 // 邮箱验证，跳转到验证成功页面
-                console.log('跳转到邮箱验证页面');
+                console.log('✅ 检测到 type=signup，跳转到邮箱验证页面');
                 window.location.href = 'email_verification.html?' + currentParams.toString();
             } else if (error === 'access_denied') {
                 // 访问被拒绝，通常是忘记密码的情况
-                console.log('检测到访问被拒绝，跳转到密码重置页面');
+                console.log('⚠️ 检测到 access_denied，跳转到密码重置页面');
                 window.location.href = 'forgot_password.html?' + currentParams.toString();
             } else {
                 // 默认跳转到邮箱验证页面
-                console.log('默认跳转到邮箱验证页面');
+                console.log('❓ 未检测到明确类型，默认跳转到邮箱验证页面');
                 window.location.href = 'email_verification.html?' + currentParams.toString();
             }
-        }, 2000); // 2秒后跳转，让用户看到加载动画
+        }, 3000); // 3秒后跳转，让用户看到调试信息
     </script>
 </body>
 </html>
