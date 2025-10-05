@@ -99,39 +99,39 @@
             Type: ${type || 'null'}<br>
             Token: ${token ? '存在' : '不存在'}<br>
             Error: ${error || '无'}<br>
-            Error Description: ${errorDescription || '无'}
+            Error Description: ${errorDescription || '无'}<br>
+            Full URL: ${window.location.href}<br>
+            Search: ${window.location.search}
         `;
         debugInfo.style.display = 'block';
         
-        // 根据type参数重定向到不同页面
+        // 根据Supabase的实际工作流程重定向
         setTimeout(() => {
-            if (error) {
-                // 有错误，跳转到邮箱验证页面显示错误
-                console.log('认证错误:', error, errorDescription);
-                window.location.href = 'email_verification.html?error=' + encodeURIComponent(error) + '&error_description=' + encodeURIComponent(errorDescription || '');
-            } else if (type === 'signup') {
-                // 邮箱确认
-                console.log('跳转到邮箱验证页面');
-                window.location.href = 'email_verification.html?token=' + (token || '');
-            } else if (type === 'recovery') {
-                // 忘记密码
-                console.log('跳转到忘记密码页面');
+            // Supabase重定向时通常不传递type参数，需要根据其他信息判断
+            if (type === 'recovery') {
+                // 明确是忘记密码
+                console.log('忘记密码，跳转到忘记密码页面');
                 window.location.href = 'forgot_password.html?token=' + (token || '');
+            } else if (type === 'signup') {
+                // 明确是邮箱确认
+                console.log('邮箱确认，跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?token=' + (token || '');
             } else if (type === 'magiclink') {
                 // 魔法链接登录
-                console.log('跳转到主页');
+                console.log('魔法链接登录，跳转到主页');
                 window.location.href = 'index.html?login=success';
+            } else if (error === 'access_denied') {
+                // 有access_denied错误，通常是忘记密码（因为邮箱确认成功不会有这个错误）
+                console.log('检测到access_denied错误，跳转到忘记密码页面');
+                window.location.href = 'forgot_password.html?token=' + (token || '');
+            } else if (error) {
+                // 其他错误，跳转到邮箱验证页面显示错误
+                console.log('其他错误，跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?error=' + encodeURIComponent(error) + '&error_description=' + encodeURIComponent(errorDescription || '');
             } else {
-                // 没有type参数，根据error参数判断
-                if (error === 'access_denied') {
-                    // 有access_denied错误，可能是忘记密码，跳转到忘记密码页面
-                    console.log('没有type参数但有access_denied错误，跳转到忘记密码页面');
-                    window.location.href = 'forgot_password.html?token=' + (token || '');
-                } else {
-                    // 其他情况，跳转到邮箱验证页面
-                    console.log('没有type参数，跳转到邮箱验证页面');
-                    window.location.href = 'email_verification.html?token=' + (token || '');
-                }
+                // 没有错误，默认跳转到邮箱验证页面（成功情况）
+                console.log('没有错误，跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?token=' + (token || '');
             }
         }, 2000); // 2秒后跳转，让用户看到加载动画
     </script>
