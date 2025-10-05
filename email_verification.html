@@ -3,325 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>邮箱验证 - 项目管理系统</title>
+    <title>邮箱验证</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
-            font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
         }
-        
-        .verification-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-            padding: 60px 50px;
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             max-width: 500px;
             width: 100%;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
         }
-        
-        .verification-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
-            border-radius: 24px 24px 0 0;
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
         }
-        
-        .icon-container {
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
         .success-icon {
             width: 80px;
             height: 80px;
             background: linear-gradient(135deg, #4CAF50, #45a049);
             border-radius: 50%;
+            margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
-            animation: pulse 2s infinite;
-        }
-        
-        .success-icon::before {
-            content: '✓';
             color: white;
-            font-size: 40px;
+            font-size: 32px;
             font-weight: bold;
         }
-        
-        
-        .title {
-            color: #2c3e50;
-            font-size: 2.2em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            letter-spacing: -0.5px;
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
         }
-        
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 10px;
+            font-size: 28px;
+        }
         .subtitle {
             color: #7f8c8d;
-            font-size: 1.1em;
-            margin-bottom: 40px;
-            line-height: 1.6;
+            font-size: 16px;
+            margin: 0 0 30px;
         }
-        
         .status-message {
-            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
-            border: 1px solid #c8e6c9;
-            border-radius: 16px;
-            padding: 25px;
-            margin: 30px 0;
-            position: relative;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
         }
-        
+        .status-message.error {
+            border-left-color: #f44336;
+            background: #ffebee;
+        }
         .status-message h3 {
-            color: #2e7d32;
-            font-size: 1.3em;
-            margin-bottom: 10px;
-            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 10px;
+            font-size: 18px;
         }
-        
         .status-message p {
-            color: #424242;
-            font-size: 1em;
+            color: #666;
+            margin: 0;
             line-height: 1.5;
         }
-        
         .action-buttons {
-            margin-top: 40px;
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
+            margin-top: 30px;
         }
-        
         .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
             display: inline-block;
-            min-width: 140px;
-        }
-        
-        .btn-primary {
+            padding: 12px 24px;
+            margin: 0 10px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
-        
-        .btn-primary:hover {
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
         }
-        
         .btn-secondary {
-            background: transparent;
-            color: #667eea;
-            border: 2px solid #667eea;
+            background: linear-gradient(135deg, #6c757d, #495057);
         }
-        
-        .btn-secondary:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
+        .help-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #7f8c8d;
         }
-        
-        .loading {
-            display: none;
-            margin: 20px 0;
-        }
-        
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        
-        .footer {
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #e0e0e0;
-            color: #95a5a6;
-            font-size: 0.9em;
-        }
-        
-        .footer a {
+        .help-text a {
             color: #667eea;
             text-decoration: none;
         }
-        
-        .footer a:hover {
+        .help-text a:hover {
             text-decoration: underline;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .verification-container {
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        @media (max-width: 600px) {
-            .verification-container {
-                padding: 40px 30px;
-                margin: 10px;
-            }
-            
-            .title {
-                font-size: 1.8em;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 200px;
-            }
         }
     </style>
 </head>
 <body>
-    <div class="verification-container">
-        <div class="icon-container">
-            <div id="statusIcon" class="success-icon"></div>
+    <div class="container">
+        <div class="success-icon" id="statusIcon">✓</div>
+        <h1 id="statusTitle">验证成功！</h1>
+        <p class="subtitle" id="statusSubtitle">您的邮箱已成功验证</p>
+        
+        <div class="status-message" id="statusMessage">
+            <h3>欢迎加入项目管理系统</h3>
+            <p>您的账户已激活，现在可以开始使用我们的项目管理功能了。</p>
         </div>
         
-        <h1 class="title" id="mainTitle">邮箱验证</h1>
-        <p class="subtitle" id="mainSubtitle">正在验证您的邮箱地址...</p>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>正在处理验证请求...</p>
+        <div class="action-buttons">
+            <a href="index.html" class="btn">完成验证</a>
+            <button onclick="showHelp()" class="btn btn-secondary">需要帮助？</button>
         </div>
         
-        <div class="status-message" id="statusMessage" style="display: none;">
-            <h3 id="statusTitle">验证成功！</h3>
-            <p id="statusText">您的邮箱已验证成功，现在可以正常使用所有功能。</p>
-        </div>
-        
-        <div class="action-buttons" id="actionButtons" style="display: none;">
-            <button class="btn btn-primary" onclick="closeWindow()">完成验证</button>
-        </div>
-        
-        <div class="footer">
-            <p>项目管理系统 | <a href="#" onclick="showHelp()">需要帮助？</a></p>
+        <div class="help-text">
+            <p>如果您遇到任何问题，请<a href="mailto:support@lncool.cn">联系我们的技术支持</a></p>
         </div>
     </div>
-    
+
     <script>
-        // 获取URL参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const error = urlParams.get('error');
-        const errorCode = urlParams.get('error_code');
-        const errorDescription = urlParams.get('error_description');
-        const token = urlParams.get('token');
-        const type = urlParams.get('type');
-        
-        // 页面加载完成后执行
-        document.addEventListener('DOMContentLoaded', function() {
-            // 显示加载状态
-            document.getElementById('loading').style.display = 'block';
-            
-            // 模拟验证过程
-            setTimeout(() => {
-                handleVerification();
-            }, 2000);
-        });
-        
         function handleVerification() {
-            const loading = document.getElementById('loading');
-            const statusMessage = document.getElementById('statusMessage');
-            const actionButtons = document.getElementById('actionButtons');
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+            const errorDescription = urlParams.get('error_description');
+            const token = urlParams.get('token');
+            
             const statusIcon = document.getElementById('statusIcon');
-            const mainTitle = document.getElementById('mainTitle');
-            const mainSubtitle = document.getElementById('mainSubtitle');
             const statusTitle = document.getElementById('statusTitle');
-            const statusText = document.getElementById('statusText');
+            const statusSubtitle = document.getElementById('statusSubtitle');
+            const statusMessage = document.getElementById('statusMessage');
             
-            // 隐藏加载状态
-            loading.style.display = 'none';
-            
-            // 无论什么情况都显示成功状态
-            statusIcon.className = 'success-icon';
-            statusMessage.className = 'status-message';
-            statusTitle.textContent = '验证成功！';
-            statusText.textContent = '您的邮箱已验证成功，现在可以正常使用所有功能。';
-            
-            mainTitle.textContent = '验证成功';
-            mainSubtitle.textContent = '恭喜！您的邮箱验证已完成。';
-            
-            // 显示状态消息和操作按钮
-            statusMessage.style.display = 'block';
-            actionButtons.style.display = 'flex';
-        }
-        
-        function closeWindow() {
-            // 尝试关闭窗口
-            if (window.opener) {
-                window.close();
+            if (error) {
+                // 显示错误信息
+                statusIcon.className = 'error-icon';
+                statusIcon.textContent = '✗';
+                statusTitle.textContent = '验证失败';
+                statusSubtitle.textContent = '邮箱验证过程中出现问题';
+                
+                statusMessage.className = 'status-message error';
+                statusMessage.innerHTML = `
+                    <h3>验证失败</h3>
+                    <p>${errorDescription || '验证链接无效或已过期，请重新申请验证邮件。'}</p>
+                `;
             } else {
-                // 如果无法关闭，显示提示
-                alert('验证完成！请返回应用继续使用。');
+                // 显示成功信息
+                statusIcon.className = 'success-icon';
+                statusIcon.textContent = '✓';
+                statusTitle.textContent = '验证成功！';
+                statusSubtitle.textContent = '您的邮箱已成功验证';
+                
+                statusMessage.className = 'status-message';
+                statusMessage.innerHTML = `
+                    <h3>欢迎加入项目管理系统</h3>
+                    <p>您的账户已激活，现在可以开始使用我们的项目管理功能了。</p>
+                `;
             }
         }
         
-        
         function showHelp() {
-            alert('验证已完成！\n\n如果您需要帮助，请联系技术支持。');
+            alert('如果您需要帮助，请：\n\n1. 检查邮箱中的验证链接是否完整\n2. 确认链接没有过期\n3. 联系技术支持：support@lncool.cn');
         }
+        
+        // 页面加载时处理验证
+        document.addEventListener('DOMContentLoaded', handleVerification);
     </script>
 </body>
 </html>

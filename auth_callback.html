@@ -106,9 +106,9 @@
         // 根据type参数重定向到不同页面
         setTimeout(() => {
             if (error) {
-                // 有错误，跳转到主页
+                // 有错误，跳转到邮箱验证页面显示错误
                 console.log('认证错误:', error, errorDescription);
-                window.location.href = 'index.html?error=' + encodeURIComponent(error);
+                window.location.href = 'email_verification.html?error=' + encodeURIComponent(error) + '&error_description=' + encodeURIComponent(errorDescription || '');
             } else if (type === 'signup') {
                 // 邮箱确认
                 console.log('跳转到邮箱验证页面');
@@ -122,9 +122,9 @@
                 console.log('跳转到主页');
                 window.location.href = 'index.html?login=success';
             } else {
-                // 其他情况，跳转到主页
-                console.log('未知类型，跳转到主页');
-                window.location.href = 'index.html';
+                // 没有type参数，可能是邮箱确认，跳转到邮箱验证页面
+                console.log('没有type参数，跳转到邮箱验证页面');
+                window.location.href = 'email_verification.html?token=' + (token || '');
             }
         }, 2000); // 2秒后跳转，让用户看到加载动画
     </script>
