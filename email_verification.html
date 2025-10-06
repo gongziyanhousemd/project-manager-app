@@ -160,6 +160,7 @@
 
     <script>
         function handleVerification() {
+            // 检查Query参数
             const urlParams = new URLSearchParams(window.location.search);
             const accessToken = urlParams.get('access_token');
             const refreshToken = urlParams.get('refresh_token');
@@ -167,15 +168,33 @@
             const errorDescription = urlParams.get('error_description');
             const type = urlParams.get('type');
             
+            // 检查Hash参数（Supabase有时会将参数放在Hash中）
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const hashAccessToken = hashParams.get('access_token');
+            const hashRefreshToken = hashParams.get('refresh_token');
+            const hashError = hashParams.get('error');
+            const hashErrorDescription = hashParams.get('error_description');
+            const hashType = hashParams.get('type');
+            
+            // 优先使用Query参数，如果没有则使用Hash参数
+            const finalAccessToken = accessToken || hashAccessToken;
+            const finalRefreshToken = refreshToken || hashRefreshToken;
+            const finalError = error || hashError;
+            const finalErrorDescription = errorDescription || hashErrorDescription;
+            const finalType = type || hashType;
+            
             // 显示调试信息
             const debugText = document.getElementById('debugText');
             debugText.innerHTML = `
                 URL: ${window.location.href}<br>
-                Access Token: ${accessToken ? '存在' : '无'}<br>
-                Refresh Token: ${refreshToken ? '存在' : '无'}<br>
-                Error: ${error || '无'}<br>
-                Error Description: ${errorDescription || '无'}<br>
-                Type: ${type || '无'}
+                Query参数: ${window.location.search}<br>
+                Hash参数: ${window.location.hash}<br>
+                <br><strong>最终参数：</strong><br>
+                Access Token: ${finalAccessToken ? '存在' : '无'}<br>
+                Refresh Token: ${finalRefreshToken ? '存在' : '无'}<br>
+                Error: ${finalError || '无'}<br>
+                Error Description: ${finalErrorDescription || '无'}<br>
+                Type: ${finalType || '无'}
             `;
             
             const statusIcon = document.getElementById('statusIcon');
@@ -184,7 +203,7 @@
             const statusMessage = document.getElementById('statusMessage');
             
             // 检查Supabase重定向结果
-            if (accessToken) {
+            if (finalAccessToken) {
                 // Supabase验证成功，显示成功信息
                 console.log('Supabase验证成功，显示成功信息');
                 statusIcon.className = 'success-icon';
@@ -197,9 +216,9 @@
                     <h3>欢迎加入项目管理系统</h3>
                     <p>您的账户已激活，现在可以开始使用我们的项目管理功能了。</p>
                 `;
-            } else if (error) {
+            } else if (finalError) {
                 // Supabase验证失败，显示错误信息
-                console.log('Supabase验证失败，显示错误信息');
+                console.log('Supabase验证失败，显示错误信息:', finalError);
                 statusIcon.className = 'error-icon';
                 statusIcon.textContent = '✗';
                 statusTitle.textContent = '验证失败';
@@ -208,7 +227,7 @@
                 statusMessage.className = 'status-message error';
                 statusMessage.innerHTML = `
                     <h3>验证失败</h3>
-                    <p>${errorDescription || '验证过程中出现问题，请重新申请验证邮件。'}</p>
+                    <p>${finalErrorDescription || '验证过程中出现问题，请重新申请验证邮件。'}</p>
                 `;
             } else {
                 // 没有参数，可能是直接访问页面
