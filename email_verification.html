@@ -161,18 +161,20 @@
     <script>
         function handleVerification() {
             const urlParams = new URLSearchParams(window.location.search);
+            const accessToken = urlParams.get('access_token');
+            const refreshToken = urlParams.get('refresh_token');
             const error = urlParams.get('error');
             const errorDescription = urlParams.get('error_description');
-            const token = urlParams.get('token');
             const type = urlParams.get('type');
             
             // 显示调试信息
             const debugText = document.getElementById('debugText');
             debugText.innerHTML = `
                 URL: ${window.location.href}<br>
+                Access Token: ${accessToken ? '存在' : '无'}<br>
+                Refresh Token: ${refreshToken ? '存在' : '无'}<br>
                 Error: ${error || '无'}<br>
                 Error Description: ${errorDescription || '无'}<br>
-                Token: ${token ? '存在' : '无'}<br>
                 Type: ${type || '无'}
             `;
             
@@ -181,26 +183,23 @@
             const statusSubtitle = document.getElementById('statusSubtitle');
             const statusMessage = document.getElementById('statusMessage');
             
-            // 检查是否是链接过期的情况
-            if (error === 'access_denied' && errorDescription && errorDescription.includes('expired')) {
-                // 链接过期，显示过期信息而不是跳转
-                console.log('检测到链接过期，显示过期信息');
-                statusIcon.className = 'error-icon';
-                statusIcon.textContent = '⏰';
-                statusTitle.textContent = '验证链接已过期';
-                statusSubtitle.textContent = '您的验证链接已过期，请重新申请';
+            // 检查Supabase重定向结果
+            if (accessToken) {
+                // Supabase验证成功，显示成功信息
+                console.log('Supabase验证成功，显示成功信息');
+                statusIcon.className = 'success-icon';
+                statusIcon.textContent = '✓';
+                statusTitle.textContent = '验证成功！';
+                statusSubtitle.textContent = '您的邮箱已成功验证';
                 
-                statusMessage.className = 'status-message error';
+                statusMessage.className = 'status-message';
                 statusMessage.innerHTML = `
-                    <h3>验证链接已过期</h3>
-                    <p>您的邮箱验证链接已过期。请重新申请验证邮件，或联系技术支持获取帮助。</p>
+                    <h3>欢迎加入项目管理系统</h3>
+                    <p>您的账户已激活，现在可以开始使用我们的项目管理功能了。</p>
                 `;
-                return;
-            }
-            
-            // 默认显示成功，因为如果能到达这个页面，说明Supabase已经验证成功了
-            if (error && error !== 'access_denied') {
-                // 只有非access_denied错误才显示失败
+            } else if (error) {
+                // Supabase验证失败，显示错误信息
+                console.log('Supabase验证失败，显示错误信息');
                 statusIcon.className = 'error-icon';
                 statusIcon.textContent = '✗';
                 statusTitle.textContent = '验证失败';
@@ -212,7 +211,8 @@
                     <p>${errorDescription || '验证过程中出现问题，请重新申请验证邮件。'}</p>
                 `;
             } else {
-                // 默认显示成功信息（包括access_denied，因为用户能到达这里说明验证已成功）
+                // 没有参数，可能是直接访问页面
+                console.log('没有验证参数，显示默认信息');
                 statusIcon.className = 'success-icon';
                 statusIcon.textContent = '✓';
                 statusTitle.textContent = '验证成功！';
